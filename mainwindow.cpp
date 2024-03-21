@@ -1,6 +1,7 @@
 #include <QTimer>
 #include <QPushButton>
 #include <QRandomGenerator>
+#include <QMap>
 
 #include "mainwindow.h"
 
@@ -10,24 +11,30 @@ MainWindow::MainWindow(QWidget *parent)
     resize(300, 600);
     static bool isLost = false;
     const int tile_size = 30;
-    const int minDropInterval = 40;
-    const int maxDropInterval = 160;
+//    const int minDropInterval = 40;
+//    const int maxDropInterval = 160;
     const int highBorder = 100;
 
     const int minSpawnInterval = 100;
     const int maxSpawnInterval = 1000;
+//    const int dropInterval = QRandomGenerator::global()->bounded(5,10);
+    int butNum = 0;
+    QMap<QString, int> dropStepMap;
 
 /// Your code here...
     this->setWindowTitle(QString("SQUARE FALLDOWN"));
     auto deployTimer = new QTimer(this);
     deployTimer->setInterval(QRandomGenerator::global()->bounded(minSpawnInterval, maxSpawnInterval));
-
+    auto bigDropTimer = new QTimer(this);
+    bigDropTimer->setInterval(50);
     QObject::connect(deployTimer,
                      &QTimer::timeout,
                      this,
-                     [=] {
+                     [db = dropStepMap, ] {
             QPushButton* newButton = new QPushButton(this);
-
+            newButton->setAccessibleName(QString("But%1").arg(butNum));
+            tbutNum++;
+            dropStepMap.insert(newButton->accessibleName(), QRandomGenerator::global()->bounded(1,6));
             QPalette palette1 = newButton->palette();
             palette1.setColor(QPalette::Button,
                              QColor(QRandomGenerator::global()->bounded(200),
@@ -42,13 +49,22 @@ MainWindow::MainWindow(QWidget *parent)
             tile_size));
 //        newButton->setMouseTracking(true);
 
-            auto dropTimer = new QTimer(newButton);
-            dropTimer->setInterval(QRandomGenerator::global()->bounded(minDropInterval, maxDropInterval));
+//            auto dropTimer = new QTimer(newButton);
+//            dropTimer->setInterval(QRandomGenerator::global()->bounded(minDropInterval, maxDropInterval));
 
-            QObject::connect(dropTimer, &QTimer::timeout,  newButton, [=] {
-                int delta = 2;
-                if (newButton->underMouse()) delta *=2;
-                newButton->move(newButton->x(),newButton->y()+delta);
+            QObject::connect(bigDropTimer, &QTimer::timeout,  newButton, [=,this, newButton] {
+
+
+//                static int ticksToDrop = dropInterval;
+//                ticksToDrop--;
+//                const int delta = dropStepMap[newButton];
+                int step = dropStepMap[newButton->accessibleName()];
+                if (newButton->underMouse()) step*=2;
+//                if (ticksToDrop <= 0) {
+                    newButton->move(newButton->x(),newButton->y()+step);
+//                    ticksToDrop = dropInterval;
+//                }
+
                 if (newButton->y() >= this->height()-tile_size) {
                     if (!isLost) {
                         QPalette palette = this->palette();
@@ -71,7 +87,8 @@ MainWindow::MainWindow(QWidget *parent)
         } );
 
         newButton->show();
-        dropTimer->start();
+//        dropTimer->start();
+
     } );
 
 
@@ -79,6 +96,7 @@ MainWindow::MainWindow(QWidget *parent)
         deployTimer->setInterval(QRandomGenerator::global()->bounded(minSpawnInterval, maxSpawnInterval));
     } );
     deployTimer->start();
+    bigDropTimer->start();
 }
 
 MainWindow::~MainWindow()
