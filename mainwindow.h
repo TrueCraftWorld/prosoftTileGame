@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 
+
 class QTimer;
 
 class MainWindow : public QMainWindow
@@ -15,5 +16,6 @@ public:
 
 private:
     QTimer* m_timer = nullptr;
+
 };
 #endif // MAINWINDOW_H
