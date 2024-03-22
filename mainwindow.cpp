@@ -21,7 +21,7 @@ MainWindow::MainWindow(QWidget *parent)
     const int maxSpawnInterval = 1000;
     int butNum = 0;
     const int lowestSpeed = 1;
-    const int highestSpeed = 6;
+    const int highestSpeed = 7;
     static int tick = 0;
     QMap<QString, int> dropStepMap;
 
@@ -30,7 +30,7 @@ MainWindow::MainWindow(QWidget *parent)
     auto deployTimer = new QTimer(this);
     deployTimer->setInterval(QRandomGenerator::global()->bounded(minSpawnInterval, maxSpawnInterval));
     auto bigDropTimer = new QTimer(this);
-    bigDropTimer->setInterval(40);
+    bigDropTimer->setInterval(100);
 
     QObject::connect(deployTimer,
                      &QTimer::timeout,
@@ -44,7 +44,7 @@ MainWindow::MainWindow(QWidget *parent)
 
             dropStepMap.insert(test, speed);
             QPalette palette1 = newButton->palette();
-            palette1.setColor(QPalette::Window,
+            palette1.setColor(QPalette::Button,
                              QColor(QRandomGenerator::global()->bounded(200),
                                     QRandomGenerator::global()->bounded(255),
                                     QRandomGenerator::global()->bounded(100, 255))); //to make them colorfull but with no chance of being same as BG
@@ -58,9 +58,9 @@ MainWindow::MainWindow(QWidget *parent)
 
             QObject::connect(bigDropTimer, &QTimer::timeout,  newButton, [=] {
 
-                if (tick % dropStepMap[newButton->accessibleName()] == 0) {
-                    int step = 2;
-                    if (newButton->underMouse()) step=4;
+//                if (tick % dropStepMap[newButton->accessibleName()] == 0) {
+                    int step = dropStepMap[newButton->accessibleName()];
+                    if (newButton->underMouse()) step*=2;
 
                     newButton->move(newButton->x(),newButton->y()+step);
 //                    std::cout << newButton->accessibleName().toStdString() << "tick" << tick << std::endl;
@@ -77,7 +77,7 @@ MainWindow::MainWindow(QWidget *parent)
                         newButton->deleteLater();
                     }
 
-                }
+//                }
 
 
             } );
