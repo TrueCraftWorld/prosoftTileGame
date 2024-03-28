@@ -24,27 +24,28 @@ MainWindow::MainWindow(QWidget *parent)
 
 
     this->setWindowTitle(QString("SQUARE FALLDOWN"));
-    auto deployTimer = new QTimer();
+
+    auto deployTimer = new QTimer(this);
     deployTimer->setInterval(QRandomGenerator::global()->bounded(minSpawnInterval, maxSpawnInterval));
-    auto bigDropTimer = new QTimer();
+
+
+    auto bigDropTimer = new QTimer(this);
     bigDropTimer->setInterval(100);
 
     QObject::connect(deployTimer,
                      &QTimer::timeout,
                      this,
-                     [this, highBorder, tile_size, bigDropTimer, deployTimer]() {
+                     [this, bigDropTimer, deployTimer]() {
         QPushButton* newButton = new QPushButton(this);
         const int speed = QRandomGenerator::global()->bounded(lowestSpeed,highestSpeed);
-        newButton->setAccessibleName(QString("%1").arg(speed));
-
         newButton->setGeometry(QRect(QRandomGenerator::global()->bounded(width()-tile_size),
-        highBorder,
-        tile_size,
-        tile_size));
+                                        highBorder,
+                                        tile_size,
+                                        tile_size));
 
-        QObject::connect(bigDropTimer, &QTimer::timeout,  newButton, [this, newButton, tile_size] {
+        QObject::connect(bigDropTimer, &QTimer::timeout,  newButton, [this, newButton, speed] {
 
-            int step = newButton->accessibleName().toInt();
+            int step = speed;
             if (newButton->underMouse()) step*=2;
 
             newButton->move(newButton->x(),newButton->y()+step);
