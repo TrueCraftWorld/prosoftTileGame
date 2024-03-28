@@ -25,17 +25,17 @@ MainWindow::MainWindow(QWidget *parent)
 
     this->setWindowTitle(QString("SQUARE FALLDOWN"));
 
-    auto deployTimer = new QTimer(this);
-    deployTimer->setInterval(QRandomGenerator::global()->bounded(minSpawnInterval, maxSpawnInterval));
+    m_timer = new QTimer(this);
+    m_timer->setInterval(QRandomGenerator::global()->bounded(minSpawnInterval, maxSpawnInterval));
 
 
     auto bigDropTimer = new QTimer(this);
     bigDropTimer->setInterval(100);
 
-    QObject::connect(deployTimer,
+    QObject::connect(this->m_timer,
                      &QTimer::timeout,
                      this,
-                     [this, bigDropTimer, deployTimer]() {
+                     [this, bigDropTimer]() {
         QPushButton* newButton = new QPushButton(this);
         const int speed = QRandomGenerator::global()->bounded(lowestSpeed,highestSpeed);
         newButton->setGeometry(QRect(QRandomGenerator::global()->bounded(width()-tile_size),
@@ -47,7 +47,6 @@ MainWindow::MainWindow(QWidget *parent)
 
             int step = speed;
             if (newButton->underMouse()) step*=2;
-
             newButton->move(newButton->x(),newButton->y()+step);
 
             if (newButton->y() < height() - tile_size) return;
@@ -64,14 +63,14 @@ MainWindow::MainWindow(QWidget *parent)
             update();
             isLost = true;
         } );
-        deployTimer->setInterval(QRandomGenerator::global()->bounded(minSpawnInterval, maxSpawnInterval));
+        m_timer->setInterval(QRandomGenerator::global()->bounded(minSpawnInterval, maxSpawnInterval));
         if (!isLost) QObject::connect(newButton, &QPushButton::pressed, newButton, &QPushButton::deleteLater);
 
         newButton->show();
     } );
 
 
-    deployTimer->start();
+    m_timer->start();
     bigDropTimer->start();
 }
 
