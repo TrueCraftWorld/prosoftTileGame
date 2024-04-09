@@ -23,7 +23,7 @@ MainWindow::MainWindow(QWidget *parent)
 
 
 
-    this->setWindowTitle(QString("SQUARE FALLDOWN"));
+    setWindowTitle(QString("SQUARE FALLDOWN"));
 
     m_timer = new QTimer(this);
     m_timer->setInterval(QRandomGenerator::global()->bounded(minSpawnInterval, maxSpawnInterval));
