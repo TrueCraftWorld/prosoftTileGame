@@ -32,7 +32,7 @@ MainWindow::MainWindow(QWidget *parent)
     auto bigDropTimer = new QTimer(this);
     bigDropTimer->setInterval(100);
 
-    QObject::connect(this->m_timer,
+    QObject::connect(m_timer,
                      &QTimer::timeout,
                      this,
                      [this, bigDropTimer]() {
