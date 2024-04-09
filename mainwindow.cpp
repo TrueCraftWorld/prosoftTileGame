@@ -39,7 +39,7 @@ MainWindow::MainWindow(QWidget *parent)
         QPushButton* newButton = new QPushButton(this);
         const int speed = QRandomGenerator::global()->bounded(lowestSpeed,highestSpeed);
         newButton->setGeometry(QRect(QRandomGenerator::global()->bounded(width()-tile_size),
-                                        highBorder,
+                                        QRandomGenerator::global()->bounded(highBorder),
                                         tile_size,
                                         tile_size));
 
